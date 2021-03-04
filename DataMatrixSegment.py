@@ -98,3 +98,5 @@ class Dmtrx3DSegment:
             y -= 2
 
         return vertices, faces
+
+
