@@ -11,10 +11,8 @@ point2 = np.array([0.5, 0.5, 0.7])
 case = 'AAQWQ11'
 
 
-def is_inside(point, ray_radius, position):
-    diff = np.subtract(point, position)
-    dist = np.sum(np.power(diff, 2))
-    return dist <= ray_radius ** 2
+def is_inside(ray_radius, triangle, position):
+    return np.sum(np.power(np.subtract(triangle[0], position), 2)) < ray_radius ** 2
 
 
 def centroid(triangle):
@@ -28,7 +26,7 @@ def __is_faced(index, source_center):
 
 
 if __name__ == '__main__':
-    mesh_a = mesh.Mesh.from_file('1.stl')
+    mesh_a = mesh.Mesh.from_file('sphr.stl')
 
     triangles = mesh_a.vectors
     normals = mesh_a.normals
@@ -36,7 +34,9 @@ if __name__ == '__main__':
     data = np.zeros(len(triangles), dtype=mesh.Mesh.dtype)
 
     for i in range(len(triangles)):
-        if __is_faced(i, [100, 0, 0]):
+        in_sphere = is_inside(100, triangles[i], [0, -150, -70])
+        licom = __is_faced(i, [0, -150, -70])
+        if not in_sphere and licom:
             triangles[i] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     data['vectors'] = triangles
