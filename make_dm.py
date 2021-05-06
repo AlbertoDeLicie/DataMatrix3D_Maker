@@ -20,11 +20,3 @@ def LoadJaw(path):
 
 def GetJawWithDmtrx(jaw, id):
     return ConnectDmtrxToJaw(jaw, CreateDmtrx(id))
-
-
-jaw = LoadJaw('2.stl')
-
-jawWithDmtrx = GetJawWithDmtrx(jaw, 'ZZZZZ99Z')
-
-jawWithDmtrx.export('aloha23.stl')
-
