@@ -1,11 +1,10 @@
 import numpy as np
 import math
-from stl import mesh
 
 class Dmtrx3DSegment:
 
     def parallelepiped_segment(self, width, length, height, position):
-        vertices = np.array([ \
+        vertices = np.array([
             [-width / 2 + position[0], -length / 2 + position[1], -height / 2 + position[2]],  # 0
             [+width / 2 + position[0], -length / 2 + position[1], -height / 2 + position[2]],  # 1
             [+width / 2 + position[0], +length / 2 + position[1], -height / 2 + position[2]],  # 2
@@ -16,7 +15,7 @@ class Dmtrx3DSegment:
             [-width / 2 + position[0], +length / 2 + position[1], +height / 2 + position[2]]  # 7
         ])
 
-        faces = np.array([ \
+        faces = np.array([
             [0, 3, 1],
             [1, 3, 2],
             [2, 3, 7],
@@ -65,10 +64,6 @@ class Dmtrx3DSegment:
             faces[i][0] = 0
             faces[i][1] = i + 1 - poly_num * 2
             faces[i][2] = i + 2 - poly_num * 2
-
-            faces[i + poly_num][0] = poly_num
-            faces[i + poly_num][1] = i - poly_num + 2
-            faces[i + poly_num][2] = i - poly_num + 1
 
         return vertices, faces
 

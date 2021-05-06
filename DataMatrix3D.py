@@ -1,8 +1,8 @@
 import DataMatrix
 import DataMatrixSegment
-from stl import mesh
 from enum import Enum
 import numpy as np
+import trimesh
 import math
 
 
@@ -24,27 +24,25 @@ class DataMatrix3D(DataMatrix.DataMatrix):
         self.size_3d = size_3d
         self.segment = DataMatrixSegment.Dmtrx3DSegment()
 
-    def encode3D(self, name, poly_num=10):
+    def encode3D(self, poly_num=10):
         segments = self.__place_segments(poly_num)
         substrate = self.__place_substrate()
 
-        datamatrix3D = mesh.Mesh(np.concatenate([segments.data, substrate.data]))
-        datamatrix3D.rotate([0, 0, 1], math.radians(90))
-        datamatrix3D.save(name)
+        dmtrx = trimesh.util.concatenate(segments, substrate)
+        dmtrx.apply_transform(trimesh.transformations.rotation_matrix(math.radians(-90), [0, 0, 1], [0, 0, 0]))
+
+        return dmtrx
 
     def __place_substrate(self):
-        substrate_position = [self.position[0],
+        substrate_position = [self.position[0] - 2.5,
                               self.position[1],
                               self.position[2] + (self.size_3d[1] - self.segments_height) / 2]
-        vertices_substrate, faces_substrate = self.segment.parallelepiped_segment(self.__x_size(),
+        vertices_substrate, faces_substrate = self.segment.parallelepiped_segment(self.__x_size() + 5,
                                                                                   self.__y_size(),
                                                                                   self.size_3d[1] - self.segments_height,
                                                                                   substrate_position)
 
-        substrate = mesh.Mesh(np.zeros(faces_substrate.shape[0], dtype=mesh.Mesh.dtype))
-        for i, f in enumerate(faces_substrate):
-            for j in range(3):
-                substrate.vectors[i][j] = vertices_substrate[int(f[j]), :]
+        substrate = trimesh.Trimesh(vertices=vertices_substrate, faces=faces_substrate)
 
         return substrate
 
@@ -136,10 +134,7 @@ class DataMatrix3D(DataMatrix.DataMatrix):
             i += 1
             n = 0
 
-        segments = mesh.Mesh(np.zeros(faces_segments.shape[0], dtype=mesh.Mesh.dtype))
-        for i, f in enumerate(faces_segments):
-            for j in range(3):
-                segments.vectors[i][j] = vertices_segments[int(f[j]), :]
+        segments = trimesh.Trimesh(vertices=vertices_segments, faces=faces_segments)
 
         return segments
 
